@@ -16,7 +16,7 @@ diag 'Test pod extraction';
 
 rmtree REP;
 
-$cache .= new( :source( DOC ), :path( REP ), :verbose);
+$cache .= new( :source( DOC ), :path( REP ), :!verbose);
 $cache.update-cache;
 #--MARKER-- Test 1
 ok $cache.pod('a-pod-file')[0] ~~ Pod::Block::Named, 'pod is returned from cache';
