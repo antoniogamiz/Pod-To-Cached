@@ -4,9 +4,9 @@ use Test::Output;
 use Pod::To::Cached;
 use File::Directory::Tree;
 
-constant REP = 't/tmp/ref';
-constant DOC = 't/tmp/doc';
-constant INDEX = REP ~ '/file-index.json';
+constant REP = 't/tmp/ref'.IO;
+constant DOC = 't/tmp/doc'.IO;
+constant INDEX = REP.add('file-index.json');
 
 plan 11;
 

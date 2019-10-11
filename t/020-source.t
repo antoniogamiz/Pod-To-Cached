@@ -5,9 +5,9 @@ use File::Directory::Tree;
 use JSON::Fast;
 use Pod::To::Cached;
 
-constant REP = 't/tmp/ref';
-constant DOC = 't/tmp/doc';
-constant INDEX = REP ~ '/file-index.json';
+constant REP = 't/tmp/ref'.IO;
+constant DOC = 't/tmp/doc'.IO;
+constant INDEX = REP.add('file-index.json');
 
 plan 36;
 
@@ -206,7 +206,7 @@ $cache.update-cache;
 is +$cache.hash-files.keys, 3, 'file added';
 (DOC ~ '/pod-file-to-deprecate.pod6').IO.unlink;
 #--MARKER-- Test 34
-stderr-like {$cache .=new(:path(REP),:verbose)}, /
+stderr-like {$cache .=new(:path(REP), :verbose)}, /
     'names not associated with pod files:'
     .+ 'pod-file-to-deprecate'
     /, 'detects old files';
@@ -233,8 +233,7 @@ is-deeply $cache.hash-files(<Valid Old>), %( 'a-pod-file' => 'Valid', 'pod-file-
 (DOC ~ '/a-pod-file.pod6').IO.spurt(q:to/POD-CONTENT/);
     =begin pod
     =TITLE This is a title
-
-    Some text
-
     =end pod
-    POD-CONTENT
+POD-CONTENT
+
+done-testing;

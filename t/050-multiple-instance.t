@@ -5,8 +5,8 @@ use Test::Output;
 use Pod::To::Cached;
 use File::Directory::Tree;
 
-constant REP = 't/tmp/ref';
-constant DOC = 't/tmp/doc';
+constant REP = 't/tmp/ref'.IO;
+constant DOC = 't/tmp/doc'.IO;
 constant COUNT = 3; # number of caches to create
 
 diag "Create multiple ({ COUNT }) caches";
@@ -17,7 +17,7 @@ my @caches;
 
 for ^COUNT {
     lives-ok {
-        @caches[$_] = Pod::To::Cached.new( :source( DOC ), :path( REP ~ $_ ), :!verbose)
+        @caches[$_] = Pod::To::Cached.new( :source( DOC ), :path( REP.add($_) ), :!verbose)
     }, "created cache no $_";
     lives-ok {
         @caches[$_].update-cache
@@ -25,7 +25,7 @@ for ^COUNT {
 }
 
 for ^COUNT {
-    ok (REP ~ $_ ).IO.d
+    ok (REP.add($_ )).d;
 }
 
 done-testing;

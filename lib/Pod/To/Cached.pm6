@@ -10,8 +10,8 @@ constant IGNORE_FILE = ".cache-ignore";
 constant INDEX = 'file-index.json';
 enum Status is export <Current Valid Failed New Old>; # New is internally used, but not stored in DB
 
-has Str $.path = '.pod6-cache';
-has Str $.source = 'doc';
+has IO::Path $.path = '.pod6-cache';
+has IO::Path $.source = 'doc';
 has Bool $.verbose is rw;
 has $.precomp;
 has %.files;
@@ -20,7 +20,7 @@ has Bool $.frozen = False;
 has Str @.error-messages;
 has Lock $!lock .= new;
 
-submethod BUILD( :$!source = 'doc', :$!path = '.pod-cache', :$!verbose = False ) { }
+submethod BUILD( :$!source = 'doc'.IO, :$!path = '.pod-cache'.IO, :$!verbose = False ) { }
 
 submethod TWEAK {
 
@@ -48,7 +48,7 @@ submethod TWEAK {
         unless $!frozen {
             die "Invalid index file"
                 unless %config<source>:exists;
-            $!source = %config<source>;
+            $!source = %config<source>.IO;
             for %!files.keys -> $f {
                 die "File $f has no status" if !%!files{$f}<status>;
                 %!files{$f}<status> = Status( Status.enums{%!files{$f}<status> }) ;
@@ -81,7 +81,7 @@ submethod TWEAK {
 method verify-source( --> Bool ) {
     return True if $!frozen;
     (@!error-messages = "$!source is not a directory", ) and return False
-        unless $!source.IO ~~ :d;
+        unless $!source ~~ :d;
     (@!error-messages = "No POD files found under $!source", ) and return False
         unless self.get-pods;
     my $rv = True;
@@ -194,8 +194,8 @@ method save-index {
                 ).hash
             }
         } ).hash );
-    %h<source> = $!source unless $!frozen;
-    "$!path".IO.add(INDEX).IO.spurt: to-json(%h);
+    %h<source> = $!source.Str unless $!frozen;
+    $!path.add(INDEX).IO.spurt: to-json(%h);
 }
 
 method filter-pods(:@pods) {
@@ -220,7 +220,6 @@ method get-pods {
              take slip sort recurse $_ if .d;
          }
      }($!source); # is the first definition of $dir
-
     @!pods = self.filter-pods(:@!pods);
 }
 
