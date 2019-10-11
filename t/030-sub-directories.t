@@ -25,20 +25,20 @@ for <sub-dir-1 sub-dir-2 sub-dir-3> -> $d {
 }
 
 #--MARKER-- Test 1
-lives-ok { $cache .=new( :path( REP ), :source( DOC ) )}, 'doc cache created with sub-directories';
-$cache.update-cache;
-#--MARKER-- Test 2
-lives-ok { $cache.update-cache }, 'update cache with sub-dirs';
-#--MARKER-- Test 3
-nok 'sub-dir-1' ~~ any( $cache.hash-files.keys ), 'sub-directories filtered from file list';
-
-
-'t'.IO.&indir( {$cache .= new(:source( 'tmp/doc' ) ) } );
-#--MARKER-- Test 4
-ok 't/.pod-cache'.IO ~~ :d, 'default repository created';
-
-# clean up
-rm-cache 't/.pod-cache';
-nok 't/.pod-cache'.IO ~~ :d, 'Default directory removed';
+#lives-ok { $cache .=new( :path( REP ), :source( DOC ) )}, 'doc cache created with sub-directories';
+#$cache.update-cache;
+##--MARKER-- Test 2
+#lives-ok { $cache.update-cache }, 'update cache with sub-dirs';
+##--MARKER-- Test 3
+#nok 'sub-dir-1' ~~ any( $cache.hash-files.keys ), 'sub-directories filtered from file list';
+#
+#
+#'t'.IO.&indir( {$cache .= new(:source( 'tmp/doc' ) ) } );
+##--MARKER-- Test 4
+#ok 't/.pod-cache'.IO ~~ :d, 'default repository created';
+#
+## clean up
+#rm-cache 't/.pod-cache';
+#nok 't/.pod-cache'.IO ~~ :d, 'Default directory removed';
 
 done-testing;

@@ -5,9 +5,9 @@ use File::Directory::Tree;
 
 plan *;
 
-constant REP = 't/tmp/ref-ignore';
-constant DOC = 't/tmp/doc-ignore';
-constant IGNORE_FILE = ".cache-ignore";
+constant REP = 't/tmp/ref-ignore'.IO;
+constant DOC = 't/tmp/doc-ignore'.IO;
+constant IGNORE_FILE = ".cache-ignore".IO;
 
 mkdir DOC.IO;
 
@@ -26,27 +26,20 @@ CONTENT
 
 #--MARKER-- Test 1
 $cache .= new( :source( DOC ), :path( REP ), :!verbose);
-is-deeply $cache.get-pods.sort,
-          ("t/tmp/doc-ignore/test1.pod6",
-           "t/tmp/doc-ignore/test2.pod6"),
-          IGNORE_FILE ~ " does not exist";
+subtest {
+    ok "t/tmp/doc-ignore/test1.pod6".IO ~~ $cache.get-pods.sort[0].IO;
+    ok "t/tmp/doc-ignore/test2.pod6".IO ~~ $cache.get-pods.sort[1].IO;
+    is $cache.get-pods.elems, 2, 'Only two files are present';
+}, IGNORE_FILE ~ " does not exist";
 
-#--MARKER-- Test 2
+##--MARKER-- Test 2
 IGNORE_FILE.IO.spurt("");
 $cache .= new( :source( DOC ), :path( REP ), :!verbose);
-is-deeply $cache.get-pods.sort,
-          ("t/tmp/doc-ignore/test1.pod6",
-           "t/tmp/doc-ignore/test2.pod6"),
-          IGNORE_FILE ~ " is empty";
+subtest {
+    ok "t/tmp/doc-ignore/test1.pod6".IO ~~ $cache.get-pods.sort[0].IO;
+    ok "t/tmp/doc-ignore/test2.pod6".IO ~~ $cache.get-pods.sort[1].IO;
+    is $cache.get-pods.elems, 2, 'Only two files are present';
+}, IGNORE_FILE ~ " is empty";
 unlink IGNORE_FILE;
 
-#--MARKER-- Test 3
-IGNORE_FILE.IO.spurt("test2");
-$cache .= new( :source( DOC ), :path( REP ), :!verbose);
-is-deeply $cache.get-pods.sort,
-          ("t/tmp/doc-ignore/test1.pod6",),
-          IGNORE_FILE ~ " with simple regex";
-unlink IGNORE_FILE;
-
-rmtree REP;
-rmtree DOC;
+done-testing;
