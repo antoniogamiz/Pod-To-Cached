@@ -35,11 +35,15 @@ subtest {
 ##--MARKER-- Test 2
 IGNORE_FILE.IO.spurt("");
 $cache .= new( :source( DOC ), :path( REP ), :!verbose);
+
 subtest {
     ok "t/tmp/doc-ignore/test1.pod6".IO ~~ $cache.get-pods.sort[0].IO;
     ok "t/tmp/doc-ignore/test2.pod6".IO ~~ $cache.get-pods.sort[1].IO;
     is $cache.get-pods.elems, 2, 'Only two files are present';
 }, IGNORE_FILE ~ " is empty";
 unlink IGNORE_FILE;
+
+rmtree REP;
+rmtree DOC;
 
 done-testing;

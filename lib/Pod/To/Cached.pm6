@@ -195,7 +195,7 @@ method save-index {
             }
         } ).hash );
     %h<source> = $!source.Str unless $!frozen;
-    ("$!path/"~INDEX).IO.spurt: to-json(%h);
+    $!path.add(INDEX).IO.spurt: to-json(%h);
 }
 
 method filter-pods(:@pods) {
